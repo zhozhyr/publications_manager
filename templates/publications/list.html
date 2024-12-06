@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <main class="container mt-5">
+        <h1 class="mb-4 text-center">Список публикаций</h1>
+        <div class="row">
+            <!-- Панель фильтров -->
+            <aside class="col-lg-3 mb-4">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">Фильтры</h5>
+                        <form method="get" action="{% url 'publications:list' %}">
+                            <div class="mb-3">
+                                <label for="author" class="form-label">Автор:</label>
+                                <select name="author" id="author" class="form-select">
+                                    <option value="">Все</option>
+                                    {% for author in authors %}
+                                        <option value="{{ author }}"
+                                                {% if selected_filters.author == author %}selected{% endif %}>
+                                            {{ author }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="edition" class="form-label">Издание:</label>
+                                <select name="edition" id="edition" class="form-select">
+                                    <option value="">Все</option>
+                                    {% for edition in editions %}
+                                        <option value="{{ edition.id }}"
+                                                {% if selected_filters.edition == edition.id|stringformat:"s" %}selected{% endif %}>
+                                            {{ edition.name }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="issue" class="form-label">Выпуск:</label>
+                                <select name="issue" id="issue" class="form-select">
+                                    <option value="">Все</option>
+                                    {% for issue in issues %}
+                                        <option value="{{ issue.id }}"
+                                                {% if selected_filters.issue == issue.id|stringformat:"s" %}selected{% endif %}>
+                                            {{ issue.name }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="category" class="form-label">Категория:</label>
+                                <select name="category" id="category" class="form-select">
+                                    <option value="">Все</option>
+                                    {% for category in categories %}
+                                        <option value="{{ category.id }}"
+                                                {% if selected_filters.category == category.id|stringformat:"s" %}selected{% endif %}>
+                                            {{ category.name }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="text-end">
+                                <button type="submit" class="btn btn-outline-dark w-100" style="font-weight: 800">Применить</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Список публикаций -->
+            <section class="col-lg-9">
+                {% for publication in publications %}
+                    <div class="publication-item mb-4 p-3 border rounded shadow-sm bg-white">
+                        <h4>
+                            <a href="{% url 'publications:publication_detail' publication.id %}"
+                               class="text-decoration-none text-dark">
+                                {{ publication.title }}
+                            </a>
+                        </h4>
+                        
+                        <p class="mb-1"> {{ publication.authors|join:", " }}</p>
+                        <p class="mb-1"> {{ publication.abstract }}</p>
+                        <div class="keywords">
+                            <strong>Ключевые слова:</strong>
+                            {% for keyword in publication.keywords %}
+                                <span>{{ keyword }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% empty %}
+                    <p class="text-muted">Публикации не найдены.</p>
+                {% endfor %}
+            </section>
+        </div>
+    </main>
+{% endblock %}

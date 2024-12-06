@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {{ publication.title }}
+{% endblock %}
+
+{% block content %}
+    <div class="container my-5">
+        <!-- Заголовок публикации -->
+        <div class="hero-banner text-center">
+            <h1 class="display-6">{{ publication.title }}</h1>
+            <hr>
+            <p class="lead mb-0">{{ publication.authors|join:", " }}</p>
+            <p class="lead mb-0">{{ edition_name }}</p>
+            <p class="lead">{{ issue_name }}</p>
+
+        </div>
+
+        <!-- Основная информация -->
+        <div class="row my-4">
+            <div class="col-lg-6 mb-3">
+                <h5>Основная информация</h5>
+                <ul class="list-unstyled">
+                    <li><strong>Страницы:</strong> {{ publication.pages }}</li>
+                    <li><strong>Аннотация:</strong> {{ publication.abstract }}</li>
+                </ul>
+            </div>
+            <div class="col-lg-6">
+
+                <div class="d-flex flex-wrap">
+                    {% for keyword in publication.keywords %}
+                        <span class="keywords">{{ keyword }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="my-5">
+            <h5 class="mb-4">Цитируется:</h5>
+            {% if citated %}
+                <div class="list-group">
+                    {% for cit in citated %}
+                        <a href="{% url 'publications:publication_detail' cit.id %}"
+                           class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center">
+                                <h6 class="mb-0"><strong>{{ cit.authors|join:", " }}</strong> {{ cit.title }}</h6>
+                                <span class="badge bg-secondary ms-3">Подробнее</span>
+                            </div>
+                            <small class="text-muted">{{ cit.publish_date }}</small>
+                        </a>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="alert alert-info" role="alert">
+                    Нет цитирований для данной публикации.
+                </div>
+            {% endif %}
+        </div>
+
+
+        <!-- Внешние цитаты -->
+        {#    <div class="my-4">#}
+        {#        <h5>Цитируется в (внешние ссылки):</h5>#}
+        {#        <p>{{ publication.external_citations }}</p>#}
+        {#    </div>#}
+
+        <!-- Текст публикации -->
+        <div class="my-4">
+            <h5>Текст публикации</h5>
+            <div class="border p-4 bg-white rounded shadow-sm publication-text">
+                {{ publication.text }}
+                {# {{ publication.text|truncatewords:100 }}#}
+            </div>
+
+        </div>
+
+        <!-- Кнопка назад -->
+        <div class="text-center my-4">
+            <a href="{% url 'publications:list' %}" class="btn btn-outline-dark btn-lg">Вернуться к списку
+                публикаций</a>
+        </div>
+    </div>
+
+{% endblock %}
