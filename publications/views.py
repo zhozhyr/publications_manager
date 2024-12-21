@@ -1,7 +1,5 @@
-from datetime import datetime
-
-from django.http import Http404
-from django.shortcuts import render
+from django.utils.timezone import now
+from django.shortcuts import render, get_object_or_404
 from .models import Publication, Issue, Edition, Category
 
 
@@ -29,7 +27,7 @@ def list_publications(request):
     editions = Edition.objects.all()
     issues = Issue.objects.all()
     categories = Category.objects.all()
-    current_year = datetime.now().strftime('%Y')
+    current_year = now().strftime('%Y')
 
     context = {
         "publications": publications,
@@ -50,10 +48,7 @@ def list_publications(request):
 
 
 def publication_detail(request, publication_id):
-    try:
-        publication = Publication.objects.get(id=publication_id)
-    except Publication.DoesNotExist:
-        raise Http404(f'Publication {publication_id} not found')
+    publication = get_object_or_404(Publication, id=publication_id)
 
     issue = publication.issue
     issue_name = issue.name if issue else "Unknown Issue"
@@ -62,7 +57,7 @@ def publication_detail(request, publication_id):
     edition_name = edition.name if edition else "Unknown Edition"
 
     # Получаем все цитируемые публикации через ManyToMany
-    citations = publication.citations.all()  # Это уже не строка, а QuerySet
+    citations = publication.citations.all()
 
     keywords_list = [keyword.strip() for keyword in publication.keywords.split(',')]
 

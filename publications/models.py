@@ -5,13 +5,18 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 
 
-class Category(models.Model):
+class BaseModel(models.Model):
     name = models.CharField(
         max_length=255,
-        verbose_name="Название категории",
-        help_text="Введите название категории публикации"
+        verbose_name="Название",
+        help_text="Введите название"
     )
 
+    class Meta:
+        abstract = True
+
+
+class Category(BaseModel):
     def __str__(self):
         return self.name
 
@@ -20,12 +25,7 @@ class Category(models.Model):
         verbose_name_plural = "Категории"
 
 
-class Edition(models.Model):
-    name = models.CharField(
-        max_length=255,
-        verbose_name="Название издания",
-        help_text="Введите название издания"
-    )
+class Edition(BaseModel):
     category = models.ForeignKey(
         Category,
         on_delete=models.CASCADE,
@@ -42,12 +42,7 @@ class Edition(models.Model):
         verbose_name_plural = "Издания"
 
 
-class Issue(models.Model):
-    name = models.CharField(
-        max_length=255,
-        verbose_name="Название выпуска",
-        help_text="Введите название выпуска"
-    )
+class Issue(BaseModel):
     date = models.DateField(
         verbose_name="Дата выпуска",
         help_text="Укажите дату выпуска"
@@ -99,14 +94,13 @@ class Publication(models.Model):
         help_text="Введите аннотацию публикации"
     )
     citations = models.ManyToManyField(
-        'self',  # Связь с самой собой для цитируемых публикаций
+        'self',
         blank=True,
-        related_name='cited_by',  # Связь с другими публикациями, которые ссылаются на эту
+        related_name='cited_by',
         symmetrical=False,
         verbose_name="Цитаты",
         help_text="Выберите публикации, которые ссылаются на эту статью"
     )
-
     text = models.TextField(
         verbose_name="Текст публикации",
         help_text="Введите полный текст публикации"
