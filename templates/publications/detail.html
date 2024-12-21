@@ -10,7 +10,7 @@
         <div class="hero-banner text-center">
             <h1 class="display-6">{{ publication.title }}</h1>
             <hr>
-            <p class="lead mb-0">{{ publication.authors|join:", " }}</p>
+            <p class="lead mb-0">{{ publication.authors }}</p>
             <p class="lead mb-0">{{ edition_name }}</p>
             <p class="lead">{{ issue_name }}</p>
 
@@ -28,7 +28,7 @@
             <div class="col-lg-6">
 
                 <div class="d-flex flex-wrap">
-                    {% for keyword in publication.keywords %}
+                    {% for keyword in keywords_list %}
                         <span class="keywords">{{ keyword }}</span>
                     {% endfor %}
                 </div>
@@ -37,13 +37,13 @@
 
         <div class="my-5">
             <h5 class="mb-4">Цитируется:</h5>
-            {% if citated %}
+            {% if citations %}
                 <div class="list-group">
-                    {% for cit in citated %}
+                    {% for cit in citations %}
                         <a href="{% url 'publications:publication_detail' cit.id %}"
                            class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
                             <div class="d-flex align-items-center">
-                                <h6 class="mb-0"><strong>{{ cit.authors|join:", " }}</strong> {{ cit.title }}</h6>
+                                <h6 class="mb-0"><strong>{{ cit.authors }}</strong> {{ cit.title }}</h6>
                                 <span class="badge bg-secondary ms-3">Подробнее</span>
                             </div>
                             <small class="text-muted">{{ cit.publish_date }}</small>

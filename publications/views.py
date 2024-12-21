@@ -1,10 +1,8 @@
 from datetime import datetime
 
 from django.http import Http404
-from django.shortcuts import render, redirect
-from .data_store import *
-
-new_publications = {publication['id']: publication for publication in publications}
+from django.shortcuts import render
+from .models import Publication, Issue, Edition, Category
 
 
 def list_publications(request):
@@ -15,43 +13,27 @@ def list_publications(request):
     category_filter = request.GET.get("category", "").strip()
 
     # Фильтрация публикаций
-    filtered_publications = publications
+    publications = Publication.objects.all()
 
     if author_filter:
-        filtered_publications = [
-            pub for pub in filtered_publications if author_filter in pub["authors"]
-        ]
+        publications = publications.filter(authors__icontains=author_filter)
     if issue_filter:
-        filtered_publications = [
-            pub for pub in filtered_publications if str(pub["issue_id"]) == issue_filter
-        ]
+        publications = publications.filter(issue__id=issue_filter)
     if edition_filter:
-        filtered_publications = [
-            pub
-            for pub in filtered_publications
-            if str(next(
-                (issue["edition_id"] for issue in issues if issue["id"] == pub["issue_id"]),
-                None,
-            )) == edition_filter
-        ]
+        publications = publications.filter(issue__edition__id=edition_filter)
     if category_filter:
-        filtered_publications = [
-            pub
-            for pub in filtered_publications
-            if str(next(
-                (edition["category_id"]
-                 for edition in editions
-                 if edition["id"] == next(
-                    (issue["edition_id"] for issue in issues if issue["id"] == pub["issue_id"]),
-                    None,
-                )),
-                None,
-            )) == category_filter
-        ]
+        publications = publications.filter(issue__edition__category__id=category_filter)
+
+    # Получаем все необходимые данные для отображения
+    authors = Publication.objects.values_list('authors', flat=True).distinct()
+    editions = Edition.objects.all()
+    issues = Issue.objects.all()
+    categories = Category.objects.all()
     current_year = datetime.now().strftime('%Y')
+
     context = {
-        "publications": filtered_publications,
-        "authors": {author for pub in publications for author in pub["authors"]},
+        "publications": publications,
+        "authors": authors,
         "editions": editions,
         "issues": issues,
         "categories": categories,
@@ -63,36 +45,34 @@ def list_publications(request):
         },
         "current_year": current_year,
     }
+
     return render(request, "publications/list.html", context)
 
 
 def publication_detail(request, publication_id):
-    if publication_id not in new_publications:
+    try:
+        publication = Publication.objects.get(id=publication_id)
+    except Publication.DoesNotExist:
         raise Http404(f'Publication {publication_id} not found')
 
-    publication = new_publications[publication_id]
+    issue = publication.issue
+    issue_name = issue.name if issue else "Unknown Issue"
 
-    issue = next((issue for issue in issues if issue['id'] == publication['issue_id']), None)
-    issue_name = issue['name'] if issue else "Unknown Issue"
+    edition = issue.edition if issue else None
+    edition_name = edition.name if edition else "Unknown Edition"
 
-    edition = next((edition for edition in editions if edition['id'] == issue['edition_id']), None) if issue else None
-    edition_name = edition['name'] if edition else "Unknown Edition"
+    # Получаем все цитируемые публикации через ManyToMany
+    citations = publication.citations.all()  # Это уже не строка, а QuerySet
 
-    citated = []
-    for cited_id in publication.get('citations', []):
-        cited_publication = new_publications.get(cited_id)
-        if cited_publication:
-            citated.append({
-                "id": cited_id,
-                "title": cited_publication['title'],
-                "authors": cited_publication['authors']
-            })
+    keywords_list = [keyword.strip() for keyword in publication.keywords.split(',')]
 
     context = {
         "publication": publication,
         "issue_name": issue_name,
         "edition_name": edition_name,
-        "citated": citated,
+        "citations": citations,
+        'keywords_list': keywords_list,
     }
 
     return render(request, 'publications/detail.html', context)
+
