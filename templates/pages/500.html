@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Ошибка сервера{% endblock %}
+{% block content %}
+    <div class="container mt-5">
+        <div class="hero-banner text-center">
+            <h1 class="display-6">Ошибка сервера</h1>
+            <p class="mt-3">На сервере что-то пошло не так!</p>
+            <a href="{% url 'publications:list' %}" class="btn btn-outline-light btn">
+                Вернуться на главную
+            </a>
+        </div>
+    </div>
+{% endblock %}

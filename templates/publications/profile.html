@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% block title %}
+    Страница пользователя {{ profile.username }}
+{% endblock %}
+
+{% block content %}
+    <main class="container mt-5">
+        <h1 class="mb-4 text-center">Страница пользователя {{ profile.username }}</h1>
+        <small>
+            <ul class="list-group list-group-horizontal justify-content-center mb-3">
+                <li class="list-group-item text-muted">
+                    Имя пользователя:
+                    {% if profile.get_full_name %}
+                        {{ profile.get_full_name }}
+                    {% else %}
+                        не указано
+                    {% endif %}
+                </li>
+                <li class="list-group-item text-muted">Регистрация: {{ profile.date_joined|date:"d E Y" }}</li>
+                <li class="list-group-item text-muted">Роль: {% if profile.is_staff %}Админ{% else %}
+                    Пользователь{% endif %}</li>
+            </ul>
+            {% if user.is_authenticated and request.user == profile %}
+                <ul class="list-group list-group-horizontal justify-content-center">
+                    <a class="btn btn-outline-primary mx-1" href="{% url 'publications:edit_profile' %}">Редактировать
+                        профиль</a>
+                    <a class="btn btn-outline-danger mx-1" href="{% url 'password_change' %}">Изменить пароль</a>
+                    <a class="btn btn-outline-success mx-1" href="{% url 'publications:create_publication' %}">Создать
+                        публикацию</a>
+                </ul>
+            {% endif %}
+        </small>
+        <br>
+        <h3 class="mb-5 text-center">Публикации пользователя</h3>
+
+        {% if page_obj %}
+            {% for publication in page_obj %}
+                <article class="mb-5">
+                    <div class="col d-flex justify-content-center">
+                        <div class="card" style="width: 60rem">
+                            <h5 class="create-card-header" style="border-radius: 5px 5px 0 0">{{ publication.title }}</h5>
+                            <div class="card-body">
+
+
+                                <h6 class="card-subtitle mb-2 text-muted">
+                                    <small>
+                                        Выпуск: {{ publication.issue.name }} ({{ publication.issue.date|date:"d E Y" }})<br>
+                                        Страницы: {{ publication.pages }}<br>
+                                        Издание: {{ publication.issue.edition.name }}<br>
+                                        Категория: {{ publication.issue.edition.category.name }}
+                                    </small>
+                                </h6>
+                                <p class="card-text">{{ publication.abstract|truncatewords:20 }}</p>
+                                <div class="d-flex flex-wrap align-items-center mt-3">
+                                    <a href="{% url 'publications:publication_detail' publication.id %}"
+                                       class="text-decoration-none me-3 px-2 py-1 border rounded text-primary">
+                                        Читать полный текст
+                                    </a>
+                                    {% if user == publication.added_by %}
+                                        <a href="{% url 'publications:edit_publication' publication.id %}"
+                                           class="text-decoration-none me-3 px-2 py-1 border rounded text-secondary">
+                                            Редактировать
+                                        </a>
+                                        <a href="{% url 'publications:delete_publication' publication.id %}"
+                                           class="text-decoration-none px-2 py-1 border rounded text-danger">
+                                            Удалить
+                                        </a>
+                                    {% endif %}
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </article>
+            {% endfor %}
+
+            {% if page_obj.has_other_pages %}
+                <nav aria-label="Page navigation" class="my-5">
+                    <ul class="pagination justify-content-center">
+                        {% if page_obj.has_previous %}
+                            <li class="page-item"><a class="page-link" href="?page=1">Первая</a></li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}"><<</a>
+                            </li>
+                        {% endif %}
+                        {% for i in page_obj.paginator.page_range %}
+                            {% if page_obj.number == i %}
+                                <li class="page-item active"><span class="page-link">{{ i }}</span></li>
+                            {% else %}
+                                <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                            {% endif %}
+                        {% endfor %}
+                        {% if page_obj.has_next %}
+                            <li class="page-item"><a class="page-link"
+                                                     href="?page={{ page_obj.next_page_number }}">>></a>
+                            </li>
+                            <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Последняя</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            {% endif %}
+        {% else %}
+            <p class="text-center">У пользователя пока нет публикаций.</p>
+        {% endif %}
+    </main>
+{% endblock %}

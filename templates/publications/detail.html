@@ -73,6 +73,12 @@
             </div>
 
         </div>
+        {% if publication.file %}
+            <a href="{{ publication.file.url }}" target="_blank">Скачать полный текст статьи</a>
+        {% else %}
+            <p>PDF файл не загружен.</p>
+        {% endif %}
+
 
         <!-- Кнопка назад -->
         <div class="text-center my-4">

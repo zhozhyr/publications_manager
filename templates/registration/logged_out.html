@@ -1,0 +1,16 @@
+{% extends "../base.html" %}
+{% block content %}
+    <main class="container mt-5" style="margin-bottom: 48px">
+        <div class="col d-flex justify-content-center">
+            <div class="card" style="width: 40rem;border-radius: 15px">
+                <div class="card-header">
+                    Вы вышли из системы!
+                </div>
+                <div class="card-body">
+                    <p><a href="{% url 'login' %}">Войти снова</a></p>
+                    <p><a href="{% url 'publications:list' %}">На главную</a></p>
+                </div>
+            </div>
+        </div>
+    </main>
+{% endblock %}

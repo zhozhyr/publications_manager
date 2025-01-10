@@ -103,3 +103,35 @@ footer a {
 footer a:hover {
     text-decoration: underline;
 }
+
+/*Создание публикации*/
+.create-card-header {
+    background: linear-gradient(90deg, rgb(7, 29, 108), rgb(0, 0, 0));
+    color: white ;
+    padding: 1rem;
+    border-radius: 15px 15px 0 0;
+}
+/*Пагинация*/
+.pagination .page-link {
+
+    color: #333; /* Темно-серый текст */
+    background-color: #f8f9fa; /* Светлый фон */
+    border: 1px solid #ddd; /* Светлая граница */
+    transition: all 0.2s ease-in-out;
+}
+
+.pagination .page-link:hover {
+    background-color: #e9ecef; /* Немного более темный фон при наведении */
+    color: #000; /* Чёрный текст */
+    border-color: #bbb; /* Чуть более темная граница */
+}
+
+.pagination .active .page-link {
+    color: #fff; /* Белый текст для активного элемента */
+    background-color: #343a40; /* Тёмно-серый фон */
+    border-color: #343a40; /* Та же граница */
+}
+
+.pagination .page-item {
+    margin: 0 2px; /* Небольшой отступ между элементами */
+}

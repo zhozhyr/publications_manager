@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Страница не найдена{% endblock %}
+{% block content %}
+<div class="container mt-5">
+  <div class="hero-banner text-center">
+    <h1 class="display-6">Страница не найдена</h1>
+    <p class="mt-3">
+      К сожалению, страницы с адресом <strong>{{ request.build_absolute_uri }}</strong> не существует.
+    </p>
+    <a href="{% url 'publications:list' %}" class="btn btn-outline-light btn">
+      Вернуться на главную
+    </a>
+  </div>
+</div>
+{% endblock %}

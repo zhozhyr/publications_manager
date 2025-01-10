@@ -1,0 +1,22 @@
+{% extends "../base.html" %}
+{% load django_bootstrap5 %}
+{% block content %}
+    <main class="container mt-5" style="margin-bottom: 48px">
+    <div class="col d-flex justify-content-center">
+        <div class="card" style="width: 40rem; border-radius: 15px">
+            <div class="create-card-header">
+                Регистрация пользователя
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    {% bootstrap_form form %}
+                    <button type="submit" class="btn btn-outline-dark w-100" style="font-weight: 800">
+                        Создать
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    </main>
+{% endblock %}

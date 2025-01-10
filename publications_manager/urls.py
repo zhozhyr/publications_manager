@@ -16,9 +16,21 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from publications import views
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('publications.urls', namespace='publications')),
     path('pages/', include('pages.urls', namespace='pages')),
-]
+    path('auth/', include('django.contrib.auth.urls')),
+    path(
+        'auth/registration/',
+        views.RegisterView.as_view(),
+        name='registration'
+    )
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+handler404 = 'pages.views.page_not_found'
+handler500 = 'pages.views.page_internal_server_error'

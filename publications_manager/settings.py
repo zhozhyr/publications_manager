@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-v-&c05rj7vz!us(uv_egg6jz()*yv+iue)50d47&u3s*$1cfr!
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -39,8 +39,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'publications',
-    'pages',
+    'django_bootstrap5',
+    'publications.apps.PublicationsConfig',
+    'pages.apps.PagesConfig',
 
 ]
 
@@ -121,6 +122,10 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
+LOGIN_REDIRECT_URL = 'publications:list'
+
+LOGIN_URL = 'login'
+
 STATIC_DIR = os.path.join(BASE_DIR, 'static')
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [STATIC_DIR]
@@ -129,3 +134,11 @@ STATICFILES_DIRS = [STATIC_DIR]
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+CSRF_FAILURE_VIEW = 'pages.views.page_csrf_forbidden'
+
+# Путь для сохранения загруженных файлов
+MEDIA_URL = '/files/'
+
+# Директория на сервере для хранения медиа-файлов
+MEDIA_ROOT = os.path.join(BASE_DIR, 'files')

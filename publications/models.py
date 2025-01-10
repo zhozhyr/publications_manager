@@ -73,6 +73,7 @@ class Publication(models.Model):
         verbose_name="Авторы",
         help_text="Укажите авторов публикации, разделяя их запятой"
     )
+    added_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='added_publications')
     issue = models.ForeignKey(
         Issue,
         on_delete=models.CASCADE,
@@ -104,6 +105,12 @@ class Publication(models.Model):
     text = models.TextField(
         verbose_name="Текст публикации",
         help_text="Введите полный текст публикации"
+    )
+    file = models.FileField(
+        null=True,
+        blank=True,
+        verbose_name="Файл публикации",
+        help_text="Загрузите файл публикации"
     )
 
     def __str__(self):
